@@ -1,0 +1,17 @@
+[project]
+name = "lessons"
+version = "0.1.0"
+description = "高中数理化 Manim 自媒体动画"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "manim>=0.18.0",
+    "numpy>=1.24.0",
+    "sympy>=1.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]

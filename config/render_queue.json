@@ -1,0 +1,5 @@
+{
+  "scenes": [
+    {"file": "force_decomposition.py", "class": "ForceDecompositionScene"}
+  ]
+}
