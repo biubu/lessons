@@ -203,7 +203,7 @@ class BaseScene(Scene):
         t = Text(text, font=FONT_CN, color=BRAND["text"], font_size=40)
         t.scale(scale)
         self.safe_place(t, "UP", "LEFT_UP", "RIGHT_UP", "LEFT_DOWN", "RIGHT_DOWN")
-        self.play(Write(t, run_time=DUR["normal"])
+        self.play(Write(t, run_time=DUR["normal"]))
         self.wait(DUR["pause"] * 0.5)
         self._current_title = t
         return t

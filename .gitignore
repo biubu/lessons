@@ -13,7 +13,7 @@ media/
 *.mp4
 *.gif
 *.png
-
+assets/
 # IDE
 .vscode/
 .idea/
