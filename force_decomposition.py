@@ -1,7 +1,9 @@
+import numpy as np
 from base_scene import *
 
 class ForceDecompositionScene(BaseScene):
     def construct(self):
+        theta = 0.45  # 斜面倾角
         # 1. [0-3s] 钩子标题
         title = self.add_title("斜面上的物体为何会下滑？")
 
@@ -22,17 +24,19 @@ class ForceDecompositionScene(BaseScene):
         g_arrow = Arrow(block.get_center(), block.get_center() + DOWN*2.2, buff=0, color=RED, stroke_width=4)
         g_label = Text("G", font=FONT_CN, color=RED, font_size=30).next_to(g_arrow, DOWN, buff=0.1)
         
-        # 虚线平行四边形
-        dash_parallel = DashedLine(g_arrow.get_start(), g_arrow.get_start() + LEFT*2.2 + DOWN*0.9, color=GRAY, stroke_width=2)
-        dash_perp = DashedLine(g_arrow.get_start(), g_arrow.get_start() + DOWN*0.9 + RIGHT*0.8, color=GRAY, stroke_width=2)
+        # 虚线辅助线：平行和垂直于斜面
+        parallel_dir = np.array([np.cos(theta), -np.sin(theta), 0])
+        perp_dir = np.array([-np.sin(theta), -np.cos(theta), 0])
+        dash_parallel = DashedLine(g_arrow.get_start(), g_arrow.get_start() + parallel_dir * 2.2, color=GRAY, stroke_width=2)
+        dash_perp = DashedLine(g_arrow.get_start(), g_arrow.get_start() + perp_dir * 2.2, color=GRAY, stroke_width=2)
         
         self.play(GrowArrow(g_arrow), FadeIn(g_label), run_time=0.5)
         self.play(Create(dash_parallel), Create(dash_perp), run_time=0.5)
         self.wait(DUR["pause"]*0.5)
 
         # 4. [15-22s] 分力箭头浮现
-        gx = Arrow(block.get_center(), block.get_center() + LEFT*2.2 + DOWN*0.9, buff=0, color=BRAND["primary"], stroke_width=3)
-        gy = Arrow(block.get_center(), block.get_center() + DOWN*0.9 + RIGHT*0.8, buff=0, color=BRAND["accent"], stroke_width=3)
+        gx = Arrow(block.get_center(), block.get_center() + parallel_dir * 2.2, buff=0, color=BRAND["primary"], stroke_width=3)
+        gy = Arrow(block.get_center(), block.get_center() + perp_dir * 2.2, buff=0, color=BRAND["accent"], stroke_width=3)
         
         self.play(Create(gx), Create(gy), run_time=0.6)
         self.wait(DUR["pause"]*0.3)

@@ -1,5 +1,12 @@
 {
   "scenes": [
-    {"file": "force_decomposition.py", "class": "ForceDecompositionScene"}
+    {"file": "force_decomposition.py", "class": "ForceDecompositionScene"},
+    {"file": "scenes/fourier_transform.py", "class": "FourierTransformScene"},
+    {"file": "scenes/double_slit.py", "class": "DoubleSlitScene"},
+    {"file": "scenes/lorenz_attractor.py", "class": "LorenzAttractorScene"},
+    {"file": "scenes/quantum_tunneling.py", "class": "QuantumTunnelingScene"},
+    {"file": "scenes/maxwell_equations.py", "class": "MaxwellEquationsScene"},
+    {"file": "scenes/gravitational_waves.py", "class": "GravitationalWavesScene"},
+    {"file": "scenes/special_relativity.py", "class": "SpecialRelativityScene"}
   ]
 }
