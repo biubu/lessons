@@ -71,6 +71,10 @@ def resolve_overlaps(mobjects, max_iters=500, step=0.15):
 
 
 class BaseScene(Scene):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._current_title = None
+
     def safe_place(self, mob, *preferred_positions, padding=0.15):
         """
         将 mob 放到第一个不与现有元素重叠的位置。
@@ -116,6 +120,10 @@ class BaseScene(Scene):
         mob.move_to(new_positions[-1])
 
     def add_title(self, text, scale=1.1):
+        # 淡出旧标题
+        if self._current_title and self._current_title in self.mobjects:
+            self.play(FadeOut(self._current_title, run_time=DUR["fast"]))
+
         t = Text(text, font=FONT_CN, color=BRAND["text"], font_size=40)
         t.scale(scale)
 
@@ -131,6 +139,7 @@ class BaseScene(Scene):
 
         self.play(Write(t, run_time=DUR["normal"]))
         self.wait(DUR["pause"] * 0.5)
+        self._current_title = t
         return t
 
     def quick_clear(self, *mobs, duration=None):
