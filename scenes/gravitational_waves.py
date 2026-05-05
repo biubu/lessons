@@ -17,6 +17,11 @@ class GravitationalWavesScene(BaseScene):
         self.play(Write(info1), run_time=DUR["normal"])
         self.auto_place(title, info1, padding=0.2)
 
+        # 播放音频和字幕
+        audio_path = "assets/audio/gravitational_waves_0_7b02517d.mp3"
+        if os.path.exists(audio_path):
+            self.show_subtitle("时空像一张弹性薄膜", audio_path=audio_path)
+
         # 网格（居中）
         grid = NumberPlane(
             x_range=[-6, 6, 1], y_range=[-4, 4, 1],

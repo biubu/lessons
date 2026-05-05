@@ -1,0 +1,8 @@
+{
+  "title": "双缝实验",
+  "segments": [
+    {"text": "电子既不是波也不是粒子，而是量子物体", "audio": "assets/audio/double_slit_0.mp3"},
+    {"text": "当我们观察时，它才变成粒子", "audio": "assets/audio/double_slit_1.mp3"},
+    {"text": "这就是量子力学的测量问题", "audio": "assets/audio/double_slit_2.mp3"}
+  ]
+}

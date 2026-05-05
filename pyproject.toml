@@ -5,7 +5,9 @@ description = "高中数理化 Manim 自媒体动画"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "edge-tts>=7.2.8",
     "manim>=0.18.0",
+    "mutagen>=1.47.0",
     "numpy>=1.24.0",
     "sympy>=1.12.0",
 ]

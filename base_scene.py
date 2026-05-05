@@ -2,6 +2,10 @@ import platform
 from manim import *
 import itertools
 import numpy as np
+import os
+from pathlib import Path
+
+DEFAULT_VOICE = "zh-CN-XiaoxiaoNeural"
 
 BRAND = {
     "bg": "#111111", "primary": "#00D4FF", "secondary": "#FF6B6B",
@@ -18,6 +22,13 @@ FONT_CN = _FONT_MAP.get(platform.system(), "Noto Sans CJK SC")
 
 X_MIN, X_MAX = -7.1, 7.1
 Y_MIN, Y_MAX = -4, 4
+
+SUBTITLE_STYLE = {
+    "font": FONT_CN,
+    "font_size": 28,
+    "color": BRAND["text"],
+    "fill_opacity": 0.9,
+}
 
 
 def get_mobject_bbox(mob):
@@ -74,18 +85,89 @@ class BaseScene(Scene):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._current_title = None
+        self._current_subtitle = None
+        self._audio_enabled = True
+        self._subtitle_enabled = True
+
+    def play_audio(self, audio_path, animation=None, wait_time=None):
+        duration = wait_time
+        if duration is None and os.path.exists(audio_path):
+            try:
+                from mutagen.mp3 import MP3
+                duration = MP3(audio_path).info.length
+            except Exception:
+                duration = DUR["normal"]
+        duration = duration or DUR["normal"]
+        if self._audio_enabled and os.path.exists(audio_path):
+            self.add_sound(audio_path)
+        if animation:
+            self.play(animation, run_time=duration)
+        else:
+            self.wait(duration)
+
+    def show_subtitle(self, text, duration=None, audio_path=None, position=DOWN):
+        if self._current_subtitle and self._current_subtitle in self.mobjects:
+            self.remove(self._current_subtitle)
+        subtitle = Text(text, **SUBTITLE_STYLE)
+        subtitle.to_edge(position, buff=0.3)
+        self._current_subtitle = subtitle
+        if duration is None and audio_path and os.path.exists(audio_path):
+            try:
+                from mutagen.mp3 import MP3
+                duration = MP3(audio_path).info.length
+            except Exception:
+                duration = DUR["normal"]
+        elif duration is None:
+            duration = DUR["normal"]
+        self.add(subtitle)
+        if audio_path and self._audio_enabled and os.path.exists(audio_path):
+            self.play_audio(audio_path, wait_time=duration)
+        else:
+            self.wait(duration)
+        self.remove(subtitle)
+        self._current_subtitle = None
+
+    def play_with_narration(self, script_path=None):
+        import json
+        if script_path is None:
+            scene_name = self.__class__.__name__.replace("Scene", "").lower()
+            script_path = f"assets/subtitles/{scene_name}.json"
+        if not os.path.exists(script_path):
+            print(f"Script not found: {script_path}")
+            return
+        with open(script_path, 'r', encoding='utf-8') as f:
+            script = json.load(f)
+        title_text = script.get("title", "")
+        if title_text:
+            self.add_title(title_text)
+        segments = script.get("segments", [])
+        for i, seg in enumerate(segments):
+            text = seg.get("text", "")
+            audio = seg.get("audio", "")
+            duration = seg.get("duration") or self._get_audio_duration(audio)
+            if audio and os.path.exists(audio):
+                self.add_sound(audio)
+            subtitle = Text(text, **SUBTITLE_STYLE)
+            subtitle.to_edge(DOWN, buff=0.3)
+            self.add(subtitle)
+            self.wait(duration)
+            self.remove(subtitle)
+            extra = duration * 0.3
+            self.wait(extra)
+
+    def _get_audio_duration(self, audio_path):
+        if not audio_path or not os.path.exists(audio_path):
+            return DUR["normal"]
+        try:
+            from mutagen.mp3 import MP3
+            return MP3(audio_path).info.length
+        except:
+            return DUR["normal"]
 
     def safe_place(self, mob, *preferred_positions, padding=0.15):
-        """
-        将 mob 放到第一个不与现有元素重叠的位置。
-        preferred_positions: 一系列 (x, y) 或 'UP', 'DOWN', 'LEFT', 'RIGHT' 等字符串。
-        用法：self.safe_place(title, UP, LEFT+UP, RIGHT+UP)
-        """
         existing = [m for m in self.mobjects if m is not mob]
-
         for pos in preferred_positions:
             if isinstance(pos, str):
-                # 处理方向字符串
                 if pos == "UP":
                     mob.to_edge(UP, buff=1.2)
                 elif pos == "DOWN":
@@ -102,8 +184,6 @@ class BaseScene(Scene):
                     mob.move_to(ORIGIN)
             else:
                 mob.move_to(np.array([pos[0], pos[1], 0]))
-
-            # 检查是否和现有元素重叠
             mob_box = get_mobject_bbox(mob)
             overlap = False
             for ex in existing:
@@ -112,32 +192,18 @@ class BaseScene(Scene):
                     overlap = True
                     break
             if not overlap:
-                return  # 找到安全位置，返回
-
-        # 如果所有首选位置都不行，用迭代推开
+                return
         all_mobs = existing + [mob]
         new_positions = resolve_overlaps(all_mobs, max_iters=300, step=0.2)
         mob.move_to(new_positions[-1])
 
     def add_title(self, text, scale=1.1):
-        # 淡出旧标题
         if self._current_title and self._current_title in self.mobjects:
             self.play(FadeOut(self._current_title, run_time=DUR["fast"]))
-
         t = Text(text, font=FONT_CN, color=BRAND["text"], font_size=40)
         t.scale(scale)
-
-        # 尝试一系列位置，避免与现有元素重叠
-        self.safe_place(
-            t,
-            "UP",          # 默认顶部
-            "LEFT_UP",   # 左上角
-            "RIGHT_UP",  # 右上角
-            "LEFT_DOWN", # 左下角
-            "RIGHT_DOWN", # 右下角
-        )
-
-        self.play(Write(t, run_time=DUR["normal"]))
+        self.safe_place(t, "UP", "LEFT_UP", "RIGHT_UP", "LEFT_DOWN", "RIGHT_DOWN")
+        self.play(Write(t, run_time=DUR["normal"])
         self.wait(DUR["pause"] * 0.5)
         self._current_title = t
         return t

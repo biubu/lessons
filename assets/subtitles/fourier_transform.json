@@ -1,0 +1,8 @@
+{
+  "title": "傅里叶变换",
+  "segments": [
+    {"text": "任何复杂的波形，都可以分解成一系列正弦波的叠加", "audio": "assets/audio/fourier_transform_0.mp3"},
+    {"text": "这就是傅里叶变换的核心思想", "audio": "assets/audio/fourier_transform_1.mp3"},
+    {"text": "从时域到频域，我们看到信号的另一面", "audio": "assets/audio/fourier_transform_2.mp3"}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "title": "引力波：时空的涟漪",
+  "segments": [
+    {"text": "时空像一张弹性薄膜，质量会使它弯曲", "audio": "assets/audio/gravitational_waves_0.mp3"},
+    {"text": "两个黑洞相互旋绕，释放引力波", "audio": "assets/audio/gravitational_waves_1.mp3"},
+    {"text": "它们最终合并成一个更大的黑洞", "audio": "assets/audio/gravitational_waves_2.mp3"},
+    {"text": "2015年，LIGO首次探测到引力波", "audio": "assets/audio/gravitational_waves_3.mp3"}
+  ]
+}
